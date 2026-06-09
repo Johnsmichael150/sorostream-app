@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toStroops } from "@sorostream/sdk";
 import DurationPicker from "@/components/DurationPicker";
 import FlowRatePreview from "@/components/FlowRatePreview";
 import WalletConnect from "@/components/WalletConnect";

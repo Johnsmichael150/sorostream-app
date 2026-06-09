@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import type { Stream } from "@sorostream/sdk";
-import { formatUSDC } from "@sorostream/sdk";
 import StreamTimeline from "@/components/StreamTimeline";
 import LiveCounter from "@/components/LiveCounter";
 import WalletConnect from "@/components/WalletConnect";

@@ -1,4 +1,3 @@
-import type { WalletAdapter, Network } from "@sorostream/sdk";
 
 const NETWORK_PASSPHRASES: Record<Network, string> = {
   mainnet: "Public Global Stellar Network ; September 2015",

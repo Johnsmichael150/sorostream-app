@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import type { Stream } from "@sorostream/sdk";
 import StreamCard from "@/components/StreamCard";
 import WalletConnect from "@/components/WalletConnect";
 import { getFreighterAdapter } from "@/src/lib/freighter";
