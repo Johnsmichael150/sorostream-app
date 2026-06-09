@@ -1,45 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 interface LiveCounterProps {
-  /** Initial claimable amount in stroops. */
-  initialStroops: bigint;
-  /** Flow rate in stroops per second. */
-  flowRatePerSecond: bigint;
-  /** Stream end time as a Unix timestamp. */
-  endTime: number;
+  flowRate: number;
+  lastWithdrawTime: Date;
 }
 
-/**
- * Real-time ticking USDC counter that increments every second
- * based on the stream's flow rate.
- */
-export default function LiveCounter({
-  initialStroops,
-  flowRatePerSecond,
-  endTime,
-}: LiveCounterProps) {
-  const [claimable, setClaimable] = useState(initialStroops);
-  const startRef = useRef(Date.now());
-  const startValueRef = useRef(initialStroops);
+export default function LiveCounter({ flowRate, lastWithdrawTime }: LiveCounterProps) {
+  const [claimable, setClaimable] = useState(0);
 
   useEffect(() => {
-    startRef.current = Date.now();
-    startValueRef.current = initialStroops;
-
-    const id = setInterval(() => {
-      const now = Math.floor(Date.now() / 1000);
-      const effectiveNow = Math.min(now, endTime);
-      const elapsedSinceMount = Math.max(
-        0,
-        effectiveNow - Math.floor(startRef.current / 1000)
-      );
-      setClaimable(startValueRef.current + flowRatePerSecond * BigInt(elapsedSinceMount));
+    const interval = setInterval(() => {
+      const elapsed = (Date.now() - new Date(lastWithdrawTime).getTime()) / 1000;
+      setClaimable(flowRate * elapsed);
     }, 1000);
+    return () => clearInterval(interval);
+  }, [flowRate, lastWithdrawTime]);
 
-    return () => clearInterval(id);
-  }, [initialStroops, flowRatePerSecond, endTime]);
+  const formatUSDC = (val: number) => (val / 10000000).toFixed(7);
 
   return (
     <span
