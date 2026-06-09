@@ -1,36 +1,28 @@
-
-const NETWORK_PASSPHRASES: Record<Network, string> = {
-  mainnet: "Public Global Stellar Network ; September 2015",
-  testnet: "Test SDF Network ; September 2015",
-  futurenet: "Test SDF Future Network ; October 2022",
-};
-
-/**
- * Creates a WalletAdapter backed by the Freighter browser extension.
- * Safe to call in Next.js (guards against SSR).
- */
-export async function getFreighterAdapter(): Promise<WalletAdapter> {
-  if (typeof window === "undefined") {
-    throw new Error("Freighter is only available in the browser");
+export async function connectWallet(): Promise<string> {
+  if (typeof window === 'undefined') return '';
+  try {
+    const freighter = (window as any).freighter;
+    if (!freighter) throw new Error('Freighter not installed');
+    return await freighter.getPublicKey();
+  } catch (e) {
+    console.error(e);
+    return '';
   }
-  const freighter = await import("@stellar/freighter-api");
-
-  return {
-    async isConnected() {
-      const result = await freighter.isConnected();
-      return result.isConnected;
-    },
-    async getPublicKey() {
-      const result = await freighter.getAddress();
-      if (result.error) throw new Error(result.error.message);
-      return result.address;
-    },
-    async signTransaction(xdr: string, network: Network) {
-      const result = await freighter.signTransaction(xdr, {
-        networkPassphrase: NETWORK_PASSPHRASES[network],
-      });
-      if (result.error) throw new Error(result.error.message);
-      return result.signedTxXdr;
-    },
-  };
+}
+export async function getPublicKey(): Promise<string> {
+  return connectWallet();
+}
+export async function signTransaction(xdr: string): Promise<string> {
+  if (typeof window === 'undefined') return xdr;
+  try {
+    const freighter = (window as any).freighter;
+    return await freighter.signTransaction(xdr);
+  } catch (e) {
+    console.error(e);
+    return xdr;
+  }
+}
+export async function isFreighterInstalled(): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  return !!(window as any).freighter;
 }
