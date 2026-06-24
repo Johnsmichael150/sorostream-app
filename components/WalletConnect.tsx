@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { getFreighterAdapter } from "@/src/lib/freighter";
+import { trackEvent } from "@/src/lib/analytics";
 
 interface WalletConnectProps {
   onConnect?: (publicKey: string) => void;
@@ -24,13 +25,16 @@ export default function WalletConnect({ onConnect }: WalletConnectProps) {
       const connected = await adapter.isConnected();
       if (!connected) {
         setError("Freighter extension not found. Please install it.");
+        trackEvent({ type: 'wallet_connect', success: false });
         return;
       }
       const key = await adapter.getPublicKey();
       setPublicKey(key);
       onConnect?.(key);
+      trackEvent({ type: 'wallet_connect', success: true });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Connection failed");
+      trackEvent({ type: 'wallet_connect', success: false });
     } finally {
       setLoading(false);
     }

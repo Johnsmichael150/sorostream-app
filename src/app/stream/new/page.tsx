@@ -2,11 +2,18 @@
 import { useState } from "react";
 import DurationPicker from "@/components/DurationPicker";
 import FlowRatePreview from "@/components/FlowRatePreview";
+import { trackEvent } from "@/src/lib/analytics";
 
 export default function NewStream() {
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
   const [duration, setDuration] = useState(0);
+
+  function handleCreateStream() {
+    trackEvent({ type: 'stream_create_start' });
+    // Stream creation logic would go here
+    // On success: trackEvent({ type: 'stream_create_complete', streamId: '...' });
+  }
 
   return (
     <main className="min-h-screen bg-gray-900 text-white p-8">
@@ -28,7 +35,7 @@ export default function NewStream() {
             <DurationPicker onChange={setDuration} />
           </div>
           {amount && duration > 0 && <FlowRatePreview amount={amount} durationSeconds={duration} />}
-          <button className="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700">
+          <button onClick={handleCreateStream} className="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700">
             Create Stream
           </button>
         </div>

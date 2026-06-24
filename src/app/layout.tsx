@@ -1,5 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { validateEnv } from "@/src/lib/env";
+import { initAnalytics } from "@/src/lib/analytics";
+import PageViewTracker from "@/src/components/PageViewTracker";
+
+// Validate environment variables at startup
+validateEnv();
+
+// Initialize analytics
+initAnalytics();
 
 export const metadata: Metadata = {
   title: "SoroStream",
@@ -9,7 +18,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-gray-900 text-white min-h-screen">{children}</body>
+      <body className="bg-gray-900 text-white min-h-screen">
+        <PageViewTracker />
+        {children}
+      </body>
     </html>
   );
 }
