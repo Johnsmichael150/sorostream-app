@@ -1,9 +1,41 @@
-// Temporary mock — SDK integration coming soon
+type StreamEvent = { type: 'streamCreated' | 'streamWithdrawn' | 'streamCancelled' | 'streamToppedUp'; streamId: string; data?: any }
+
+type EventCallback = (event: StreamEvent) => void
+
+const listeners = new Map<string, Set<EventCallback>>()
+
+function emit(event: StreamEvent) {
+  const set = listeners.get(event.type)
+  if (set) set.forEach(cb => cb(event))
+}
+
+export function onStreamEvent(type: string, cb: EventCallback) {
+  if (!listeners.has(type)) listeners.set(type, new Set())
+  listeners.get(type)!.add(cb)
+  return () => listeners.get(type)?.delete(cb)
+}
+
 export const sorostream = {
-  createStream: async () => ({ streamId: '0', txHash: '' }),
-  withdraw: async () => ({ txHash: '', amount: '0' }),
-  cancelStream: async () => ({ txHash: '' }),
-  topUp: async () => ({ txHash: '', newEndTime: new Date() }),
+  createStream: async () => {
+    const result = { streamId: '1', txHash: '0xabc' }
+    emit({ type: 'streamCreated', streamId: result.streamId, data: result })
+    return result
+  },
+  withdraw: async () => {
+    const result = { txHash: '0xdef', amount: '0' }
+    emit({ type: 'streamWithdrawn', streamId: '', data: result })
+    return result
+  },
+  cancelStream: async () => {
+    const result = { txHash: '0xghi' }
+    emit({ type: 'streamCancelled', streamId: '', data: result })
+    return result
+  },
+  topUp: async (streamId: string, amount: string) => {
+    const result = { txHash: '0xjkl', newEndTime: new Date(Date.now() + 86400000) }
+    emit({ type: 'streamToppedUp', streamId, data: { ...result, amount } })
+    return result
+  },
   getStream: async () => null,
   getClaimable: async () => '0',
   getStreamsBySender: async () => [],

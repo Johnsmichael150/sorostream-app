@@ -13,10 +13,15 @@ export default function StreamCard({ id = '', sender = '', recipient = '', flowR
   const truncate = (addr: string) => addr ? `${addr.slice(0, 4)}...${addr.slice(-4)}` : '';
   const fmt = (val: number) => (val / 10000000).toFixed(2);
   return (
-    <div className="bg-gray-800 rounded-lg p-4 space-y-2 border border-gray-700">
+    <div className="bg-gray-800 rounded-lg p-4 space-y-2 border border-gray-700" role="article" aria-label={`Stream ${id}`}>
       <div className="flex justify-between items-center">
         <span className="text-gray-400 text-xs">Stream #{id}</span>
-        <span className={`text-xs px-2 py-1 rounded-full ${status === 'Active' ? 'bg-green-900 text-green-400' : 'bg-gray-700 text-gray-400'}`}>{status}</span>
+        <span
+          className={`text-xs px-2 py-1 rounded-full ${status === 'Active' ? 'bg-green-900 text-green-400' : 'bg-gray-700 text-gray-400'}`}
+          aria-label={`Status: ${status}`}
+        >
+          {status}
+        </span>
       </div>
       <div className="text-sm">
         <p className="text-gray-400">From: <span className="text-white">{truncate(sender)}</span></p>
